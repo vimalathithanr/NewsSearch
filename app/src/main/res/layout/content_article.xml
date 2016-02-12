@@ -9,7 +9,11 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.example.vraja03.newsearch.MainActivity"
-    tools:showIn="@layout/activity_main">
+    tools:context="com.example.vraja03.newsearch.activities.ArticleActivity"
+    tools:showIn="@layout/activity_article">
 
+    <WebView
+        android:id="@+id/wvArticle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></WebView>
 </RelativeLayout>
