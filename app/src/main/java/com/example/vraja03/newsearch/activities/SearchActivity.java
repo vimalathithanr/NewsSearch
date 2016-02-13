@@ -1,9 +1,14 @@
 package com.example.vraja03.newsearch.activities;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.RadioButton;
 
 import com.example.vraja03.newsearch.Article;
 import com.example.vraja03.newsearch.ArticleArrayAdapter;
@@ -35,6 +41,7 @@ public class SearchActivity extends AppCompatActivity {
 
     ArrayList<Article> articles;
     ArticleArrayAdapter adapter;
+    private View formElementsView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +87,19 @@ public class SearchActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            formElementsView = inflater.inflate(R.layout.dialog_fragment,
+                    null, false);
+
+
+            new AlertDialog.Builder(SearchActivity.this).setView(formElementsView)
+                    .setTitle("Set Preference")
+                    .setPositiveButton("Set", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+
+                        }
+
+                    }).setNegativeButton("Cancel", null).show();
         }
 
         return super.onOptionsItemSelected(item);
