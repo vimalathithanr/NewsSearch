@@ -183,7 +183,6 @@ public class SearchActivity extends AppCompatActivity {
             Toast.makeText(SearchActivity.this, "Please enter a search query!", Toast.LENGTH_SHORT).show();
 
         AsyncHttpClient client = new AsyncHttpClient();
-//        Intent intent = getIntent();
         String url = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
         RequestParams params = new RequestParams();
         params.put("api-key", "5c80b636d25bb07696584d982687673a:5:74377365");
