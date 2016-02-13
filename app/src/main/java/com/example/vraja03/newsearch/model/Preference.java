@@ -1,9 +1,13 @@
 package com.example.vraja03.newsearch.model;
 
+import java.io.Serializable;
+
 /**
  * Created by VRAJA03 on 2/13/2016.
  */
-public class Preference {
+public class Preference implements Serializable {
+
+    private static final long serialVersionUID = 5177222050535318633L;
     private String date;
     private String order;
     private String[] newsDesk;

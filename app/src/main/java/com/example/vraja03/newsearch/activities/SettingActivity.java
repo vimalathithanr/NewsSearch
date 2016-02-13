@@ -11,14 +11,12 @@ import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.view.View.OnClickListener;
 
 import com.example.vraja03.newsearch.R;
 import com.example.vraja03.newsearch.model.Preference;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Locale;
 
 /**
  * Created by VRAJA03 on 2/12/2016.
@@ -31,7 +29,6 @@ public class SettingActivity extends AppCompatActivity {
     private String[] arraySpinner;
     Spinner spinner;
     private String myFormat = "MM/dd/yy";
-    Preference preference;
     String[] newsDesk = new String[3];
     CheckBox chkArts;
     CheckBox chkFashion;
@@ -97,22 +94,30 @@ public class SettingActivity extends AppCompatActivity {
 
     public void onPreferenceset(View view) {
 
-        int i=0;
+        int i = 0;
 
-        if(chkArts.isChecked()){
+        if (chkArts.isChecked()) {
             newsDesk[i++] = "Arts";
         }
-        if(chkFashion.isChecked())
+        if (chkFashion.isChecked())
             newsDesk[i++] = "Fashion and Style";
 
-        if(chkSports.isChecked())
+        if (chkSports.isChecked())
             newsDesk[i++] = "Sports";
 
 
+        Preference preference = new Preference();
+        if (etDatepicker.getText().toString() != null)
+            preference.setDate(etDatepicker.getText().toString());
+
+        if (spinner.getSelectedItem().toString() != null)
+            preference.setOrder(spinner.getSelectedItem().toString());
+
+        if (i > 0)
+            preference.setNewsDesk(newsDesk);
+
         Intent in = new Intent(this, SearchActivity.class);
-        in.putExtra("date", etDatepicker.getText().toString());
-        in.putExtra("order", spinner.getSelectedItem().toString());
-        in.putExtra("desk", newsDesk);
+        in.putExtra("preference", preference);
         startActivity(in);
     }
 }

@@ -1,4 +1,4 @@
-package com.example.vraja03.newsearch;
+package com.example.vraja03.newsearch.model;
 
 import org.json.JSONArray;
 import org.json.JSONException;

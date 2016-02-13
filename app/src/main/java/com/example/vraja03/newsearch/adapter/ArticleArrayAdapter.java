@@ -1,4 +1,4 @@
-package com.example.vraja03.newsearch;
+package com.example.vraja03.newsearch.adapter;
 
 import android.content.Context;
 import android.text.TextUtils;
@@ -9,6 +9,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.vraja03.newsearch.R;
+import com.example.vraja03.newsearch.model.Article;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
