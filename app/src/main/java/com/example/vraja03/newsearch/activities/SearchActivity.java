@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.example.vraja03.newsearch.R;
 import com.example.vraja03.newsearch.adapter.ArticleArrayAdapter;
+import com.example.vraja03.newsearch.helper.EndlessScrollListener;
 import com.example.vraja03.newsearch.model.Article;
 import com.example.vraja03.newsearch.model.Preference;
 import com.example.vraja03.newsearch.util.Config;
@@ -42,16 +43,13 @@ public class SearchActivity extends AppCompatActivity {
     GridView gvResults;
     ArrayList<Article> articles;
     ArticleArrayAdapter adapter;
+    String query = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        Config.context = this;
-        if(!NetworkConnection.checkInternetConn(Config.context))
-            Toast.makeText(this, "No Internet Connection", Toast.LENGTH_SHORT).show();
-
         setSupportActionBar(toolbar);
         setupViews();
     }
@@ -64,6 +62,17 @@ public class SearchActivity extends AppCompatActivity {
         adapter = new ArticleArrayAdapter(this, articles);
         gvResults.setAdapter(adapter);
 
+        gvResults.setOnScrollListener(new EndlessScrollListener() {
+            @Override
+            public boolean onLoadMore(int page, int totalItemsCount) {
+                // Triggered only when new data needs to be appended to the list
+                // Add whatever code is needed to append new items to your AdapterView
+                customLoadMoreDataFromApi(page);
+                // or customLoadMoreDataFromApi(totalItemsCount);
+                return true; // ONLY if more data is actually being loaded; false otherwise.
+            }
+        });
+
         gvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -71,6 +80,69 @@ public class SearchActivity extends AppCompatActivity {
                 Article article = articles.get(position);
                 in.putExtra("url", article.getWebUrl());
                 startActivity(in);
+            }
+        });
+    }
+
+    // Append more data into the adapter
+    public void customLoadMoreDataFromApi(int offset) {
+        // This method probably sends out a network request and appends new data items to your adapter.
+        // Use the offset value and add it as a parameter to your API request to retrieve paginated data.
+        // Deserialize API response and then construct new objects to append to the adapter
+        query = etQuery.getText().toString();
+        AsyncHttpClient client = new AsyncHttpClient();
+        String url = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
+        RequestParams params = new RequestParams();
+        params.put("api-key", "5c80b636d25bb07696584d982687673a:5:74377365");
+        params.put("page", offset);
+        params.put("q", query);
+
+        Preference preference = (Preference) getIntent().getSerializableExtra("preference");
+
+        try {
+            String prefDate = preference.getDate();
+            String prefOrder = preference.getOrder();
+            String[] desk = preference.getNewsDesk();
+
+
+            if (!prefDate.equals(null) && !prefDate.isEmpty())
+                params.put("begin_date", prefDate);
+
+            if (!prefOrder.equals(null) && !prefDate.isEmpty())
+                params.put("sort", prefOrder);
+
+            if (desk != null) {
+                List<String> list = new ArrayList<String>();
+                for (String s : desk) {
+                    if (s != null && s.length() > 0) {
+                        list.add(s);
+                    }
+                }
+                desk = list.toArray(new String[list.size()]);
+
+                if (desk.length > 0) {
+                    String deskFormat = Arrays.toString(desk);
+                    String deskFormatPre = deskFormat.replace("[", "(\"");
+                    String deskFormatpost = deskFormatPre.replace("]", "\")");
+                    String deskFormatfinal = deskFormatpost.replace(",", "\",\"");
+                    params.put("fq", deskFormatfinal);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        client.get(url, params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                JSONArray articleJsonResults = null;
+                try {
+                    articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
+                    articles.addAll(Article.fromJsonArray(articleJsonResults));
+                    adapter.notifyDataSetChanged();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -100,12 +172,18 @@ public class SearchActivity extends AppCompatActivity {
 
     public void onArticleSearch(View view) {
 
-        NetworkConnection connection = new NetworkConnection();
+        Config.context = this;
+        if (!NetworkConnection.checkInternetConn(Config.context))
+            Toast.makeText(SearchActivity.this, "No Internet Connection", Toast.LENGTH_LONG).show();
 
         articles.clear();
-        String query = etQuery.getText().toString();
+        query = etQuery.getText().toString();
+
+        if (query == null || query.isEmpty())
+            Toast.makeText(SearchActivity.this, "Please enter a search query!", Toast.LENGTH_SHORT).show();
+
         AsyncHttpClient client = new AsyncHttpClient();
-        Intent intent = getIntent();
+//        Intent intent = getIntent();
         String url = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
         RequestParams params = new RequestParams();
         params.put("api-key", "5c80b636d25bb07696584d982687673a:5:74377365");
@@ -114,9 +192,11 @@ public class SearchActivity extends AppCompatActivity {
 
         Preference preference = (Preference) getIntent().getSerializableExtra("preference");
 
+        try {
             String prefDate = preference.getDate();
             String prefOrder = preference.getOrder();
             String[] desk = preference.getNewsDesk();
+
 
             if (!prefDate.equals(null) && !prefDate.isEmpty())
                 params.put("begin_date", prefDate);
@@ -141,7 +221,9 @@ public class SearchActivity extends AppCompatActivity {
                     params.put("fq", deskFormatfinal);
                 }
             }
-
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         client.get(url, params, new JsonHttpResponseHandler() {
             @Override
