@@ -166,25 +166,29 @@ public class SearchActivity extends AppCompatActivity {
         params.put("api-key", "5c80b636d25bb07696584d982687673a:5:74377365");
         params.put("page", 0);
         params.put("q", query);
-        params.put("begin_date", intent.getStringExtra("date"));
-        params.put("sort", intent.getStringExtra("order"));
+        if (intent.getStringExtra("date") != null)
+            params.put("begin_date", intent.getStringExtra("date"));
+        if (intent.getStringExtra("order") != null)
+            params.put("sort", intent.getStringExtra("order"));
 
-        String[] desk = intent.getStringArrayExtra("desk");
+        if (intent.getStringArrayExtra("desk") != null) {
+            String[] desk = intent.getStringArrayExtra("desk");
 
-        List<String> list = new ArrayList<String>();
-        for(String s : desk) {
-            if(s != null && s.length() > 0) {
-                list.add(s);
+            List<String> list = new ArrayList<String>();
+            for (String s : desk) {
+                if (s != null && s.length() > 0) {
+                    list.add(s);
+                }
             }
-        }
-        desk = list.toArray(new String[list.size()]);
+            desk = list.toArray(new String[list.size()]);
 
-        if (desk.length > 0) {
-            String deskFormat = Arrays.toString(desk);
-            String deskFormatPre = deskFormat.replace("[", "(\"");
-            String deskFormatpost = deskFormatPre.replace("]", "\")");
-            String deskFormatfinal = deskFormatpost.replace(",", "\",\"");
-            params.put("fq", deskFormatfinal);
+            if (desk.length > 0) {
+                String deskFormat = Arrays.toString(desk);
+                String deskFormatPre = deskFormat.replace("[", "(\"");
+                String deskFormatpost = deskFormatPre.replace("]", "\")");
+                String deskFormatfinal = deskFormatpost.replace(",", "\",\"");
+                params.put("fq", deskFormatfinal);
+            }
         }
 
         client.get(url, params, new JsonHttpResponseHandler() {
