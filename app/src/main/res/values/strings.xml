@@ -4,6 +4,7 @@
     <string name="hint">Enter search query</string>
     <string name="search">Search</string>
     <string name="title_activity_article">ArticleActivity</string>
+    <string name="title_activity_setting">SettingActivity</string>
     <string name="arts">Arts</string>
     <string name="fashion">Fashion and Style</string>
     <string name="sports">Sports</string>
