@@ -4,19 +4,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
 import com.example.vraja03.newsearch.R;
-import com.example.vraja03.newsearch.adapter.ArticleArrayAdapter;
-import com.example.vraja03.newsearch.helper.EndlessScrollListener;
+import com.example.vraja03.newsearch.adapter.ArticleAdapter;
 import com.example.vraja03.newsearch.model.Article;
 import com.example.vraja03.newsearch.model.Preference;
 import com.example.vraja03.newsearch.util.Config;
@@ -37,12 +36,11 @@ import cz.msebera.android.httpclient.Header;
 
 public class SearchActivity extends AppCompatActivity {
 
-    //EditText etQuery;
-    //Button btnSearch;
-    GridView gvResults;
+    RecyclerView rvResults;
     ArrayList<Article> articles;
-    ArticleArrayAdapter adapter;
+    ArticleAdapter adapter;
     String query = null;
+    int page =0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,33 +48,42 @@ public class SearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        setupViews();
-    }
 
-    public void setupViews() {
-        gvResults = (GridView) findViewById(R.id.gvResults);
         articles = new ArrayList<>();
-        adapter = new ArticleArrayAdapter(this, articles);
-        gvResults.setAdapter(adapter);
+        adapter = new ArticleAdapter(articles);
 
-        gvResults.setOnScrollListener(new EndlessScrollListener() {
-            @Override
-            public boolean onLoadMore(int page, int totalItemsCount) {
-                // Triggered only when new data needs to be appended to the list
-                // Add whatever code is needed to append new items to your AdapterView
-                customLoadMoreDataFromApi(page);
-                // or customLoadMoreDataFromApi(totalItemsCount);
-                return true; // ONLY if more data is actually being loaded; false otherwise.
+
+        rvResults = (RecyclerView) findViewById(R.id.rvResults);
+
+        // Attach the adapter to the recyclerview to populate items
+        rvResults.setAdapter(adapter);
+        // Set layout manager to position the items
+        final StaggeredGridLayoutManager gridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        rvResults.setLayoutManager(gridLayoutManager);
+
+        rvResults.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            public int getLastVisibleItem(int[] lastVisibleItemPositions) {
+                int maxSize = 0;
+                for (int i = 0; i < lastVisibleItemPositions.length; i++) {
+                    if (i == 0) {
+                        maxSize = lastVisibleItemPositions[i];
+                    } else if (lastVisibleItemPositions[i] > maxSize) {
+                        maxSize = lastVisibleItemPositions[i];
+                    }
+                }
+                return maxSize;
             }
-        });
 
-        gvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent in = new Intent(getApplicationContext(), ArticleActivity.class);
-                Article article = articles.get(position);
-                in.putExtra("url", article.getWebUrl());
-                startActivity(in);
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                int[] lastVisibleItemPositions = gridLayoutManager.findLastVisibleItemPositions(null);
+                int lastVisibleItemPosition = getLastVisibleItem(lastVisibleItemPositions);
+                int totalItemCount = gridLayoutManager.getItemCount();
+
+                if (totalItemCount > 0 && totalItemCount - lastVisibleItemPosition < 10) {
+                    page++;
+                    customLoadMoreDataFromApi(page);
+                }
             }
         });
     }
@@ -241,7 +248,7 @@ public class SearchActivity extends AppCompatActivity {
         client.get(url, params, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                JSONArray articleJsonResults = null;
+                JSONArray articleJsonResults;
                 try {
                     articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
                     articles.addAll(Article.fromJsonArray(articleJsonResults));
