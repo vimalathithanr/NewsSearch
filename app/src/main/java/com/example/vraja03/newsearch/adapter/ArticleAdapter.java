@@ -2,6 +2,8 @@ package com.example.vraja03.newsearch.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.provider.ContactsContract;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -14,6 +16,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.vraja03.newsearch.R;
 import com.example.vraja03.newsearch.activities.ArticleActivity;
+import com.example.vraja03.newsearch.helper.DynamicHeightImageView;
 import com.example.vraja03.newsearch.model.Article;
 
 import java.util.List;
@@ -26,7 +29,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
     private List<Article> mArticle;
     Context context;
 
-    // Pass in the contact array into the constructor
+   // Pass in the contact array into the constructor
     public ArticleAdapter(List<Article> articles) {
         mArticle = articles;
     }
@@ -53,13 +56,15 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
         TextView textView = holder.tvTitle;
         textView.setText(article.getHeadline());
 
-        ImageView imageView = holder.ivImage;
+        DynamicHeightImageView imageView = holder.ivImage;
         imageView.setImageResource(0);
 
         String thumbnail = article.getThumbNail();
 
+        imageView.setHeightRatio(((double) article.getHeight()) / article.getWidth());
+
         if (!TextUtils.isEmpty(thumbnail)) {
-            Glide.with(context).load(thumbnail).diskCacheStrategy(DiskCacheStrategy.ALL).into(imageView);
+            Glide.with(context).load(thumbnail).fitCenter().diskCacheStrategy(DiskCacheStrategy.ALL).into(imageView);
         }
 
         imageView.setOnClickListener(new View.OnClickListener() {
@@ -84,9 +89,9 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
     public static class ViewHolder extends RecyclerView.ViewHolder {
         // Your holder should contain a member variable
         // for any view that will be set as you render a row
-        public ImageView ivImage;
+        public DynamicHeightImageView ivImage;
         public TextView tvTitle;
-        private Context context;
+
 
         // We also create a constructor that accepts the entire item row
         // and does the view lookups to find each subview
@@ -95,7 +100,7 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
             // to access the context from any ViewHolder instance.
             super(itemView);
 
-            ivImage = (ImageView) itemView.findViewById(R.id.ivImage);
+            ivImage = (DynamicHeightImageView) itemView.findViewById(R.id.ivImage);
             tvTitle = (TextView) itemView.findViewById(R.id.tvTitle);
 
         }

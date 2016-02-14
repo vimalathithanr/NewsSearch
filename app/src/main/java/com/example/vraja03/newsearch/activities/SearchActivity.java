@@ -11,7 +11,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.GridView;
 import android.widget.Toast;
 
 import com.example.vraja03.newsearch.R;
@@ -40,7 +39,7 @@ public class SearchActivity extends AppCompatActivity {
     ArrayList<Article> articles;
     ArticleAdapter adapter;
     String query = null;
-    int page =0;
+    int page = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,17 +47,16 @@ public class SearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         articles = new ArrayList<>();
         adapter = new ArticleAdapter(articles);
-
-
         rvResults = (RecyclerView) findViewById(R.id.rvResults);
 
         // Attach the adapter to the recyclerview to populate items
         rvResults.setAdapter(adapter);
         // Set layout manager to position the items
         final StaggeredGridLayoutManager gridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        gridLayoutManager.setGapStrategy(0);
+
         rvResults.setLayoutManager(gridLayoutManager);
 
         rvResults.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -93,7 +91,6 @@ public class SearchActivity extends AppCompatActivity {
         // This method probably sends out a network request and appends new data items to your adapter.
         // Use the offset value and add it as a parameter to your API request to retrieve paginated data.
         // Deserialize API response and then construct new objects to append to the adapter
-        //query = etQuery.getText().toString();
         AsyncHttpClient client = new AsyncHttpClient();
         String url = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
         RequestParams params = new RequestParams();

@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="30dp"
         android:layout_marginTop="30dp"
         android:text="Begin Date"
         android:textSize="14dp" />
@@ -21,8 +21,9 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:layout_alignRight="@id/tvBeginDate"
-        android:layout_marginRight="5dp"
-        android:ems="8"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="9dp"
+        android:ems="10"
         android:focusableInTouchMode="true" />
 
     <TextView
@@ -31,15 +32,19 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@id/tvBeginDate"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="30dp"
         android:layout_marginTop="30dp"
         android:text="Sort Order"
         android:textSize="14dp" />
 
     <Spinner
         android:id="@+id/spinner"
-        android:layout_width="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginRight="30dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:spinnerMode="dropdown"
         android:layout_below="@id/etDatepicker"
         android:layout_toRightOf="@+id/tvSortOrder" />
 
@@ -50,13 +55,16 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@id/tvSortOrder"
         android:layout_marginTop="30dp"
-        android:text="News Desk Values"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="24dp"
+        android:text="News Desk "
         android:textSize="14dp" />
 
     <CheckBox
         android:id="@+id/chkArts"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
         android:layout_below="@id/tvSortOrder"
         android:layout_toRightOf="@id/tvNewdeskValues"
         android:text="@string/arts" />
@@ -82,6 +90,7 @@
         android:layout_height="wrap_content"
         android:text="Set"
         android:id="@+id/btnSet"
+        android:layout_marginTop="30dp"
         android:onClick="onPreferenceset"
         android:layout_below="@+id/chkSports"
         android:layout_centerHorizontal="true" />
