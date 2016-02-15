@@ -45,7 +45,8 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
 ## Open-source libraries used
 
 - [Android Async HTTP](https://github.com/loopj/android-async-http) - Simple asynchronous HTTP requests with JSON parsing
-- [Picasso](http://square.github.io/picasso/) - Image loading and caching library for Android
+- [New york Times](http://developer.nytimes.com/docs/read/article_search_api_v2) - Search news article
+- [Glide](http://inthecheesefactory.com/blog/get-to-know-glide-recommended-by-google/en) - Image loading library for Android
 
 ## License
 
